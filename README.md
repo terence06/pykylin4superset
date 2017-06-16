@@ -16,11 +16,11 @@ Superset 官方支持清单里没有 Kylin。但是由于 Superset 是通过 SQL
 
 Python 的官方库中没有找到 Kylin 的 SQLAlchemy + DBAPI 实现，但是在 GitHub 上有一个 [pykylin](https://github.com/wxiang7/pykylin) 项目。
 
-由于 Kylin 在设计上与 Superset 有一些冲突，使用这个 pykylin 会有一些兼容性的问题。我在这个版本的基础上做了一些调整，使其可以兼容 Supset：
+由于 Kylin 在设计上与 Superset 有一些冲突，使用这个 pykylin 会有一些兼容性的问题。我在这个版本的基础上做了一些调整，使其可以兼容 Superset：
 
 **pykylin4superset**：[https://github.com/YorkeCao/pykylin4superset](https://github.com/YorkeCao/pykylin4superset)
 
-[点此下载]([https://codeload.github.com/YorkeCao/pykylin4superset/zip/master](https://codeload.github.com/YorkeCao/pykylin4superset/zip/master))其压缩文件，解压后进入其根目录，执行：
+[点此下载](https://codeload.github.com/YorkeCao/pykylin4superset/zip/master)其压缩文件，解压后进入其根目录，执行：
 
 ```
 pip install -r ./requirements.txt
