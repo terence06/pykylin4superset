@@ -39,7 +39,7 @@ python setup.py install
 
 进入添加 Database 的页面。
 
-1. 在 Database 条目中任意起一个名字，如：ylinDB
+1. 在 Database 条目中任意起一个名字，如：Kylin
 2. 在 SQLAlchemy URI 中输入连接串，如：kylin://admin:KYLIN@localhost:7070/kylin/api?project=yourProjectName
 3. 单击 **Test Connection** 测试链接
 4. 测试成功后，点击 **Save** 保存
