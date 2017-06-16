@@ -24,6 +24,9 @@ class Cursor(object):
 
     def execute(self, operation, parameters={}, acceptPartial=True, limit=None, offset=0):
         sql = operation % parameters
+        # 将 'count' 改为 'ccount'。count 为 Kylin 关键字
+        sql = sql.replace('count', 'ccount')
+
         data = {
             'sql': sql,
             'offset': offset,
@@ -35,6 +38,15 @@ class Cursor(object):
         resp = self.connection.proxy.post('query', json=data)
 
         column_metas = resp['columnMetas']
+
+        # 还原 'count'，并将关键字改为小写，以兼容 Superset
+        for c in column_metas:
+            if c['label'] == 'CCOUNT':
+                c['label'] = 'COUNT'
+                c['name'] = 'COUNT'
+            c['label'] = str(c['label']).lower()
+            c['name'] = str(c['name']).lower()
+            
         self.description = [
             [c['label'], c['columnTypeName'],
              c['displaySize'], 0,
