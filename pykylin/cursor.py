@@ -1,6 +1,7 @@
 # -- coding: utf-8 --
 from __future__ import absolute_import
 
+import re
 from dateutil import parser
 
 from .errors import Error
@@ -27,7 +28,10 @@ class Cursor(object):
         sql = operation % parameters
         # 将 'count' 改为 'ccount'。count 为 Kylin 关键字
         sql = sql.replace('count', 'ccount')
-
+        # Kylin 的时间格式不支持 时、分、秒
+        pattern = re.compile(r' \d{2}:\d{2}:\d{2}')
+        sql = pattern.sub('', sql)
+        logger.debug(sql)
         data = {
             'sql': sql,
             'offset': offset,
