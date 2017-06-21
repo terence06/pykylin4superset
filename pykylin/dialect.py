@@ -163,7 +163,7 @@ class KylinDialect(default.DefaultDialect):
             tpe_size = column['column_SIZE']
             args = (tpe_size,)
             tpe = KYLIN_TYPE_MAP['VARCHAR']
-        elif tpe_NAME == 'DECIMAL':
+        elif tpe_NAME.startswith('DECIMAL'):
             digit_size = column['decimal_DIGITS']
             args = (digit_size,)
             tpe = KYLIN_TYPE_MAP['DECIMAL']
