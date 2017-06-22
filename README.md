@@ -54,3 +54,21 @@ python setup.py install
 
 可以创建 Table，然后创建 Slice 进行测试。
 
+
+
+## 驱动升级
+
+升级 pykylin4superset，先用 pip 卸载之，然后重新安装即可。**注意要在 Superset 所在的虚拟机中执行**。
+
+```
+# . ./venv/bin/activate
+(venv)# pip uninstall pykylin
+(venv)# wget https://codeload.github.com/YorkeCao/pykylin4superset/zip/master -O pykylin4superset‐master.zip
+(venv)# unzip pykylin4superset‐master.zip
+(venv)# cd pykylin4superset‐master/
+(venv)# python setup.py install
+```
+
+重装后重启 Superset 即可。
+
+pykylin4superset 才到坑后不定时更新，建议保持最新版。
