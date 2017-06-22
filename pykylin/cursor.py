@@ -75,7 +75,7 @@ class Cursor(object):
                 val = parser.parse(val)
             elif tpe == 'BIGINT' or tpe == 'INT' or tpe == 'TINYINT':
                 val = int(val)
-            elif tpe == 'DOUBLE' or tpe == 'FLOAT':
+            elif tpe == 'DOUBLE' or tpe == 'FLOAT' or tpe == 'DECIMAL':
                 val = float(val)
             elif tpe == 'BOOLEAN':
                 val = (val == 'true')
