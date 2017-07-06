@@ -7,6 +7,12 @@ from dateutil import parser
 from .errors import Error
 from .log import logger
 
+rep_sql_regx = re.compile("('\$\|.*\|\$')")
+limit_sql_regx = re.compile("(limit\s*[0-9]{1,6})")
+join_on_sql_regx = re.compile("join.*on.*\s*where", re.DOTALL)
+count_regx = re.compile("\\bcount\\b", re.DOTALL)
+
+
 class Cursor(object):
 
     def __init__(self, connection):
@@ -24,10 +30,46 @@ class Cursor(object):
     def close(self):
         logger.debug('Cursor close called')
 
+    @staticmethod
+    def trans_sql_for_kylin(sql_str):
+        sql_str = sql_str.lower()
+        rep_sql_list = rep_sql_regx.findall(sql_str)
+        if not rep_sql_list:
+            return sql_str
+        transformed_sql = ''
+        rep_sql_dict = dict()
+        rep_sql_set = set()
+        for rep_sql in rep_sql_list:
+            rep_sql_dict[rep_sql] = rep_sql.split('|')[-2]
+            rep_sql_set.add(rep_sql.split('|')[1])
+
+        # step 1, replace all the const str to data name
+        for rep_sql, rep_value in rep_sql_dict.items():
+            transformed_sql = sql_str.replace(rep_sql, rep_value)
+
+        # step 2, replace limit number from sub-sql
+        limit_sql_list = limit_sql_regx.findall(transformed_sql)
+        if len(limit_sql_list) == 2:
+            transformed_sql = transformed_sql.replace(limit_sql_list[1], limit_sql_list[0])
+
+        # step 3, delete 'join on' sql
+        join_on_sql = join_on_sql_regx.findall(transformed_sql)
+        if join_on_sql:
+            transformed_sql = transformed_sql.replace(join_on_sql[0], 'where')
+
+        # step 4, replace 'where' with rep_sql(inner join)
+        for rep_sql in rep_sql_set:
+            transformed_sql = transformed_sql.replace('where', '%s %s' % (rep_sql, 'where'))
+
+        return transformed_sql
+
     def execute(self, operation, parameters={}, acceptPartial=True, limit=None, offset=0):
-        sql = operation % parameters
+        if parameters:
+             sql = operation % parameters
+        else:
+            sql = operation
         # 将 'count' 改为 'ccount'。count 为 Kylin 关键字
-        sql = sql.replace('count', 'ccount')
+        sql = count_regx.sub("ccount", sql) 
         # Kylin 的时间格式不支持 时、分、秒
         pattern = re.compile(r' \d{2}:\d{2}:\d{2}')
         sql = pattern.sub('', sql)
@@ -51,13 +93,13 @@ class Cursor(object):
                 c['name'] = 'COUNT'
             c['label'] = str(c['label']).lower()
             c['name'] = str(c['name']).lower()
-            
+
         self.description = [
             [c['label'], c['columnTypeName'],
              c['displaySize'], 0,
              c['precision'], c['scale'], c['isNullable']]
             for c in column_metas
-        ]
+            ]
 
         self.results = [self._type_mapped(r) for r in resp['results']]
         self.rowcount = len(self.results)
